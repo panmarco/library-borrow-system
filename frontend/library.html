@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <title>圖書借閱系統 - 核心功能中心</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <link rel="stylesheet" href="./css/library.css">
+</head>
+
+<body class="bg-light">
+
+    <div id="app" class="container py-5">
+        <div
+            class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom bg-white p-4 rounded shadow-sm">
+            <h2 class="fw-bold text-success mb-0">📚 圖書借還書中心</h2>
+            <div v-if="currentUser" class="d-flex align-items-center">
+                <span class="badge bg-success p-2 me-2 fs-6">歡迎登入</span>
+                <span class="fw-bold text-dark fs-5">{{ currentUser.userName }}</span>
+                <button @click="handleLogout" class="btn btn-sm btn-outline-danger ms-3 rounded-pill">安全登出</button>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-7">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-dark text-white fw-bold py-3 fs-5">📖 目前在庫書籍</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>庫存編號</th>
+                                        <th>國際標準書號 (ISBN)</th>
+                                        <th class="text-center">狀態</th>
+                                        <th class="text-center">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="book in inventoryList" :key="book.inventoryId">
+                                        <td>
+                                            <div class="fw-bold text-dark fs-6">書籍 ID: #{{ book.inventoryId }}</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-secondary fs-6">{{ book.isbn }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span
+                                                :class="book.status === '在庫' ? 'bg-success-subtle text-success border-success-subtle' : 'bg-danger-subtle text-danger border-danger-subtle'"
+                                                class="badge border px-3 py-2 fs-6">
+                                                {{ book.status }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <button @click="borrowBook(book)" :disabled="book.status !== '在庫'"
+                                                class="btn btn-sm btn-success rounded-pill px-4 py-2 fw-bold">
+                                                確認借閱
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="inventoryList.length === 0">
+                                        <td colspan="4" class="text-center text-muted py-5">目前全數書籍皆被借光，暫無在庫書籍</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white fw-bold py-3 fs-5">📋 我的借閱清單</div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <li v-for="record in myBorrowingRecords" :key="record.recordId"
+                                class="list-group-item d-flex justify-content-between align-items-center p-3 animate-item">
+                                <div>
+                                    <div class="fw-bold text-primary fs-6">紀錄編號: #{{ record.recordId }}</div>
+                                    <small class="text-muted d-block mt-1">📖 庫存編號: #{{ record.inventoryId?.inventoryId
+                                        || record.inventoryId }}</small>
+                                </div>
+                                <button @click="returnBook(record)"
+                                    class="btn btn-sm btn-outline-primary rounded-pill px-4 py-2 fw-bold">
+                                    確認歸還
+                                </button>
+                            </li>
+                            <li v-if="myBorrowingRecords.length === 0"
+                                class="list-group-item text-center text-muted py-5 fs-6">
+                                您當前沒有借閱中的書籍 ☕
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/library.js"></script>
+</body>
+
+</html>

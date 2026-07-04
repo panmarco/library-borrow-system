@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圖書借閱系統 - 會員登入</title>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="./css/login.css">
+</head>
+
+<body>
+
+    <div id="app" class="login-container">
+        <h2>圖書借閱系統 - 會員登入</h2>
+
+        <form @submit.prevent="handleLogin">
+            <div class="form-item">
+                <label>手機號碼：</label>
+                <input v-model="loginForm.phoneNumber" type="text" placeholder="請輸入手機號碼" required />
+            </div>
+
+            <div class="form-item">
+                <label>密碼：</label>
+                <input v-model="loginForm.password" type="password" placeholder="請輸入密碼" required />
+            </div>
+
+            <button type="submit" class="btn-login">登入系統</button>
+        </form>
+
+        <hr class="divider" />
+
+        <div class="register-redirect">
+            <p>還沒有帳號嗎？</p>
+            <button class="btn-register" @click="goToRegister">立即註冊新會員</button>
+        </div>
+    </div>
+
+    <script src="./js/login.js"></script>
+</body>
+
+</html>
