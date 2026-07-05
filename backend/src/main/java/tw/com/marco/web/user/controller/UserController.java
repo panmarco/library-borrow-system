@@ -1,23 +1,27 @@
 package tw.com.marco.web.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import tw.com.marco.core.entity.User;
 import tw.com.marco.web.user.service.UserService;
 
-
 @RestController
 @RequestMapping("user")
+@CrossOrigin(origins = "http://localhost:5500", allowCredentials = "true")
 public class UserController {
 	@Autowired
 	private UserService service;
-	
+
 	@PostMapping("register")
 	public User register(@RequestBody User user) {
 		if (user == null) {
@@ -28,11 +32,11 @@ public class UserController {
 		}
 		return service.register(user);
 	}
-	
+
 	@PostMapping("login")
 	public User login(@RequestBody User user, HttpServletRequest req) {
 		user = service.login(user);
-		
+
 		if (user != null && user.isSuccessful()) {
 			if (req.getSession(false) != null) {
 				req.changeSessionId();
@@ -41,5 +45,20 @@ public class UserController {
 			session.setAttribute("user", user);
 		}
 		return user;
+	}
+
+	@DeleteMapping("logout")
+	public void logout(HttpSession session) {
+		session.invalidate();
+	}
+	
+	@GetMapping("getUserInfo")
+	public User getUserInfo(@SessionAttribute(required = false) User user) {
+		if (user == null) {
+			return null; 
+	    }
+		User respondUser = new User();
+		respondUser.setUserName(user.getUserName());
+		return respondUser;
 	}
 }

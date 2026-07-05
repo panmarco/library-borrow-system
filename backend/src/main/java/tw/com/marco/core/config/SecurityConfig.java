@@ -21,16 +21,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. 啟用跨域設定
+            // 啟用跨域設定
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            // 2. 徹底關閉 CSRF 防禦 (前後端分離的 403 元兇)
+            // 徹底關閉 CSRF 防禦 (前後端分離的 403 元兇)
             .csrf(csrf -> csrf.disable())
             
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 有需要就自動關聯 Session
             )
             
-            // 4. 放行規則
+            // 放行規則
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/user/**", "/library/**").permitAll()
                 .anyRequest().authenticated()
@@ -42,7 +42,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5500", "http://localhost:5500"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5500"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true); // 必須允許攜帶 Cookie 憑證

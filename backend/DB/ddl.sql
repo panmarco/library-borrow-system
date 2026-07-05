@@ -3,10 +3,10 @@ USE library_borrow_system;
 -- 刪除舊表與舊程序
 DROP PROCEDURE IF EXISTS sp_insert_user;
 DROP PROCEDURE IF EXISTS sp_select_user_phone;
-DROP PROCEDURE IF EXISTS sp_select_inventory_by_status;
+DROP PROCEDURE IF EXISTS sp_select_all_inventory;
+DROP PROCEDURE IF EXISTS sp_select_all_borrowing_record;
 DROP PROCEDURE IF EXISTS sp_update_inventory_status;
 DROP PROCEDURE IF EXISTS sp_insert_borrowing_record;
-DROP PROCEDURE IF EXISTS sp_select_all_borrowing_record;
 DROP PROCEDURE IF EXISTS sp_update_return_time;
 
 DROP TABLE IF EXISTS borrowing_record;
@@ -80,10 +80,16 @@ BEGIN
 	SELECT * FROM users WHERE phone_number = p_phone;
 END$$
 
--- 查詢所有在庫庫存
-CREATE PROCEDURE sp_select_inventory_by_status()
+-- 查詢所有庫存
+CREATE PROCEDURE sp_select_all_inventory()
 BEGIN
-    SELECT * FROM inventory WHERE status = '在庫';
+    SELECT * FROM inventory;
+END$$
+
+-- 查詢所有借閱紀錄
+CREATE PROCEDURE sp_select_all_borrowing_record()
+BEGIN
+	SELECT * FROM borrowing_record;
 END$$
 
 -- 更新庫存書籍狀態
@@ -102,12 +108,6 @@ CREATE PROCEDURE sp_insert_borrowing_record(
 )
 BEGIN
 	INSERT INTO borrowing_record (user_id, inventory_id) VALUES (p_user_id, p_inventory_id);
-END$$
-
--- 查詢所有借閱紀錄
-CREATE PROCEDURE sp_select_all_borrowing_record()
-BEGIN
-	SELECT * FROM borrowing_record;
 END$$
 
 -- 更新還書時間

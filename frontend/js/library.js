@@ -7,55 +7,54 @@ Vue.createApp({
     setup() {
         const API_BASE = 'http://localhost:8080/library-borrow-system';
 
-        // 當前使用者資訊(暫時寫死')
-        const currentUser = ref({
-            userId: 1,
-            userName: "marco"
-        });
+        // 使用者資訊
+        const currentUser = ref(null);
 
-        // 庫存陣列變數
+        // 所有庫存
         const inventoryList = ref([]);
 
-        // 借閱紀錄清單
+        // 所有借閱紀錄
         const borrowingRecords = ref([]);
 
-        // 🌟 初始化：獲取所有在庫書籍
-        const loadInventory = async () => {
+        // 獲取登入者資訊
+        const loadUserInfo = async () => {
             try {
-                const res = await axios.get(`${API_BASE}/library/manage`);
-                inventoryList.value = res.data;
+                const res = await axios.get(`${API_BASE}/user/getUserInfo`, {
+                    withCredentials: true
+                });
+                currentUser.value = res.data;
             } catch (error) {
-                console.error('庫存載入失敗，請聯絡後台');
-                inventoryList.value = [
-                    { inventoryId: 1, isbn: "9789571234561", status: "在庫" },
-                    { inventoryId: 2, isbn: "9789571234562", status: "在庫" }
-                ];
+                alert('資料載入失敗，請聯絡後台');
+                location.href = './login.html';
             }
         };
 
-        // 尚無此功能(未來新增)
-        // 🌟 初始化：同步獲取目前所有的借閱紀錄
-        // const loadAllRecords = async () => {
-        //     try {
-        //         // 如果後端你有寫查詢總紀錄的 API
-        //         const res = await axios.get(`${API_BASE}/library/records`);
-        //         myBorrowingRecords.value = res.data;
-        //     } catch (error) {
-        //         console.warn('暫時查無借閱歷史');
-        //     }
-        // };
+        // 初始化：獲取所有資料
+        const loadAllData = async () => {
+            try {
+                const res = await axios.get(`${API_BASE}/library/manage`, {
+                    withCredentials: true
+                });
+
+                inventoryList.value = res.data.inventories;
+                borrowingRecords.value = res.data.records;
+            } catch (error) {
+                console.error('資料載入失敗，請聯絡後台');
+            }
+        };
 
         // 點擊「確認借閱」
         const borrowBook = async (book) => {
             try {
-                const res = await axios.post(`${API_BASE}/library/rent/${book.inventoryId}`, { withCredentials: true });
+                const res = await axios.post(`${API_BASE}/library/rent/${book.inventoryId}`, null, {
+                    withCredentials: true
+                });
                 const result = res.data;
 
                 if (result.successful) {
                     alert(result.message || '借閱成功！');
                     book.status = '已借閱';
-                    // 🌟 一行流更新：直接用後端打包好的最新總紀錄蓋掉舊畫面
-                    borrowingRecords.value = result.data;
+                    location.reload();
                 } else {
                     alert(result.message || '借閱失敗！');
                 }
@@ -65,18 +64,17 @@ Vue.createApp({
         };
 
         // 點擊「確認歸還」
-        const returnBook = async (record) => {
+        const returnBook = async (book) => {
             try {
-                const res = await axios.put(`${API_BASE}/library/return/${record.inventoryId}`, { withCredentials: true });
+                const res = await axios.post(`${API_BASE}/library/return/${book.inventoryId}`, null, {
+                    withCredentials: true
+                });
                 const result = res.data;
 
                 if (result.successful) {
                     alert(result.message || '歸還成功！');
-
-                    const matchedBook = inventoryList.value.find(b => b.inventoryId === id);
-                    if (matchedBook) matchedBook.status = '在庫';
-
-                    borrowingRecords.value = result.data;
+                    book.status = '在庫';
+                    location.reload();
                 } else {
                     alert(result.message || '歸還失敗！');
                 }
@@ -85,25 +83,50 @@ Vue.createApp({
             }
         };
 
-        // 登出(尚未解決session問題，未完成)
-        const handleLogout = () => {
-            alert('確定登出');
-            location.href = './login.html';
+        // 登出
+        const logout = async () => {
+            const result = confirm('確定登出');
+            if (result) {
+                await axios.delete(`${API_BASE}/user/logout`, {
+                    withCredentials: true
+                });
+                location.href = './login.html';
+            }
+        };
+
+        // 日期時間格式
+        const formatTime = (timeString) => {
+            if (!timeString) return '無';
+            const date = new Date(timeString);
+
+            // 如果時間解析失敗，直接回傳原字串
+            if (isNaN(date.getTime())) return timeString;
+
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            const hh = String(date.getHours()).padStart(2, '0');
+            const mm = String(date.getMinutes()).padStart(2, '0');
+
+            return `${y}-${m}-${d} ${hh}:${mm}`;
         };
 
         // 網頁登入自動載入資料
-        onMounted(() => {
-            loadInventory();
+        onMounted(async () => {
+            await loadUserInfo();
+            await loadAllData();
         });
 
         return {
-            currentUser,
             inventoryList,
             borrowingRecords,
-            loadInventory,
+            currentUser,
+            loadUserInfo,
+            loadAllData,
             borrowBook,
             returnBook,
-            handleLogout
+            logout,
+            formatTime
         };
     }
 }).mount('#app');

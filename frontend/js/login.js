@@ -11,11 +11,9 @@ Vue.createApp({
             try {
                 const response = await axios.post(
                     'http://localhost:8080/library-borrow-system/user/login',
-                    loginForm.value,
-                    {
-                        // 允許跨域攜帶 Cookie (Session ID)
-                        withCredentials: true
-                    }
+                    loginForm.value, {
+                    withCredentials: true
+                }
                 );
 
                 if (response.data.successful) {
@@ -32,7 +30,7 @@ Vue.createApp({
         };
 
         const goToRegister = () => {
-            window.location.href = './register.html';
+            location.href = './register.html';
         };
 
         return {

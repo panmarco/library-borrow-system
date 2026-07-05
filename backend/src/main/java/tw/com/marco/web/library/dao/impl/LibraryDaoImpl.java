@@ -17,58 +17,57 @@ public class LibraryDaoImpl implements LibraryDao {
 	@PersistenceContext
 	private Session session;
 
-	// 查詢所有在庫書籍
-	@Override
-	public List<Inventory> selectInventoryByStatus() {
-		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_inventory_by_status",
-				Inventory.class);
-		return query.getResultList();
-	}
-
-	@Override
-	public int updateInventoryStatus(Integer inventoryId, String status) {
-		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_update_inventory_status");
-
-		query.registerStoredProcedureParameter("p_inventory_id", Integer.class, ParameterMode.IN);
-		query.registerStoredProcedureParameter("p_status", String.class, ParameterMode.IN);
-
-		query.setParameter("p_inventory_id", inventoryId);
-		query.setParameter("p_status", status);
-
-		return query.executeUpdate();
-	}
-
+	// 新增借閱紀錄
 	@Override
 	public int insertBorrowingRecord(Integer userId, Integer inventoryId) {
 		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_insert_borrowing_record");
 
 		query.registerStoredProcedureParameter("p_user_id", Integer.class, ParameterMode.IN);
 		query.registerStoredProcedureParameter("p_inventory_id", Integer.class, ParameterMode.IN);
-
 		query.setParameter("p_user_id", userId);
 		query.setParameter("p_inventory_id", inventoryId);
 
 		return query.executeUpdate();
 	}
 
+	// 更新庫存書籍狀態
 	@Override
-	public List<BorrowingRecord> selectAllBorrowingRecords() {
-		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_all_borrowing_record",
-				BorrowingRecord.class);
-		return query.getResultList();
+	public int updateInventoryStatus(Integer inventoryId, String status) {
+		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_update_inventory_status");
+
+		query.registerStoredProcedureParameter("p_inventory_id", Integer.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("p_status", String.class, ParameterMode.IN);
+		query.setParameter("p_inventory_id", inventoryId);
+		query.setParameter("p_status", status);
+
+		return query.executeUpdate();
 	}
 
+	// 更新還書時間
 	@Override
 	public int updateReturnTime(Integer userId, Integer inventoryId) {
 		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_update_return_time");
 
 		query.registerStoredProcedureParameter("p_user_id", Integer.class, ParameterMode.IN);
 		query.registerStoredProcedureParameter("p_inventory_id", Integer.class, ParameterMode.IN);
-
 		query.setParameter("p_user_id", userId);
 		query.setParameter("p_inventory_id", inventoryId);
 
 		return query.executeUpdate();
 	}
 
+	// 查詢所有庫存
+	@Override
+	public List<Inventory> selectAllInventory() {
+		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_all_inventory", Inventory.class);
+		return query.getResultList();
+	}
+
+	// 查詢所有借閱紀錄
+	@Override
+	public List<BorrowingRecord> selectAllBorrowingRecords() {
+		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_all_borrowing_record",
+				BorrowingRecord.class);
+		return query.getResultList();
+	}
 }

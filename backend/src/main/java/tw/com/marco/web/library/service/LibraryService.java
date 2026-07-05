@@ -1,10 +1,12 @@
 package tw.com.marco.web.library.service;
 
-import tw.com.marco.core.pojo.RecordResult;
+import tw.com.marco.core.pojo.AllData;
 
 public interface LibraryService {
 
-	RecordResult borrowBook(Integer userId, Integer inventoryId);
+	AllData getAllData();
 
-	RecordResult returnBook(Integer userId, Integer inventoryId);
+	AllData borrowBook(Integer userId, Integer inventoryId);
+
+	AllData returnBook(Integer userId, Integer inventoryId);
 }
