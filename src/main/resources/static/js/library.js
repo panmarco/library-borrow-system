@@ -30,6 +30,8 @@ Vue.createApp({
 
                 inventoryList.value = res.data.inventories;
                 borrowingRecords.value = res.data.records;
+                // 👈 加這行！點開它看看裡面的 record 物件，書籍 ID 的欄位到底叫什麼名字？
+                console.log("借閱紀錄資料結構：", res.data.records);
             } catch (error) {
                 console.error('資料載入失敗，請聯絡後台');
             }
@@ -43,7 +45,6 @@ Vue.createApp({
 
                 if (result.successful) {
                     alert(result.message || '借閱成功！');
-                    book.status = '已借閱';
                     location.reload();
                 } else {
                     alert(result.message || '借閱失敗！');
@@ -61,7 +62,6 @@ Vue.createApp({
 
                 if (result.successful) {
                     alert(result.message || '歸還成功！');
-                    book.status = '在庫';
                     location.reload();
                 } else {
                     alert(result.message || '歸還失敗！');
@@ -69,6 +69,13 @@ Vue.createApp({
             } catch (error) {
                 alert('歸還失敗，請聯絡後台');
             }
+        };
+
+        // 借閱紀錄找書籍 ID 相同且尚未歸還紀錄
+        const myBorrowedBook = (inventoryId) => {
+            return borrowingRecords.value.some(record =>
+                record.inventoryId === inventoryId && !record.returnTime
+            );
         };
 
         // 登出
@@ -111,6 +118,7 @@ Vue.createApp({
             loadAllData,
             borrowBook,
             returnBook,
+            myBorrowedBook,
             logout,
             formatTime
         };

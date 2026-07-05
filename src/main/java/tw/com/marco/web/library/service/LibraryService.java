@@ -4,7 +4,7 @@ import tw.com.marco.core.pojo.AllData;
 
 public interface LibraryService {
 
-	AllData getAllData();
+	AllData getAllData(Integer userId);
 
 	AllData borrowBook(Integer userId, Integer inventoryId);
 

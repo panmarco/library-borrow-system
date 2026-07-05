@@ -14,6 +14,10 @@ public interface LibraryDao {
 	int updateReturnTime(Integer userId, Integer inventoryId);
 	
 	List<Inventory> selectAllInventory();
+	
+	String selectInventoryStatus(Integer inventoryId);
 
-	List<BorrowingRecord> selectAllBorrowingRecords();
+	List<BorrowingRecord> selectBorrowingRecordsByUserId(Integer userId);
+	
+	Integer selectBorrowingRecordUserIdByInventoryId(Integer inventoryId);
 }

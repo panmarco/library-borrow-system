@@ -4,7 +4,9 @@ USE library_borrow_system;
 DROP PROCEDURE IF EXISTS sp_insert_user;
 DROP PROCEDURE IF EXISTS sp_select_user_phone;
 DROP PROCEDURE IF EXISTS sp_select_all_inventory;
-DROP PROCEDURE IF EXISTS sp_select_all_borrowing_record;
+DROP PROCEDURE IF EXISTS sp_select_inventory_status;
+DROP PROCEDURE IF EXISTS sp_select_borrowing_record_user_id;
+DROP PROCEDURE IF EXISTS sp_select_borrowing_record_user_id_by_inventory_id;
 DROP PROCEDURE IF EXISTS sp_update_inventory_status;
 DROP PROCEDURE IF EXISTS sp_insert_borrowing_record;
 DROP PROCEDURE IF EXISTS sp_update_return_time;
@@ -86,10 +88,36 @@ BEGIN
     SELECT * FROM inventory;
 END$$
 
--- 查詢所有借閱紀錄
-CREATE PROCEDURE sp_select_all_borrowing_record()
+-- 查詢單一書籍狀態
+CREATE PROCEDURE sp_select_inventory_status(
+    IN p_inventory_id INT,
+    OUT p_status VARCHAR(50)
+)
 BEGIN
-	SELECT * FROM borrowing_record;
+    SELECT status INTO p_status
+    FROM inventory 
+    WHERE inventory_id = p_inventory_id;
+END$$
+
+
+-- 查詢個人借閱紀錄
+CREATE PROCEDURE sp_select_borrowing_record_user_id(
+	IN p_user_id INT
+)
+BEGIN
+	SELECT * FROM borrowing_record WHERE user_id = p_user_id;
+END$$
+
+-- 查詢該書借閱人
+CREATE PROCEDURE sp_select_borrowing_record_user_id_by_inventory_id(
+    IN p_inventory_id INT,
+    OUT p_user_id INT
+)
+BEGIN
+    SELECT user_id INTO p_user_id
+    FROM borrowing_record 
+    WHERE inventory_id = p_inventory_id
+	 AND return_time IS NULL;
 END$$
 
 -- 更新庫存書籍狀態
@@ -119,7 +147,8 @@ BEGIN
 	UPDATE borrowing_record 
 	SET return_time = NOW() 
 	WHERE user_id = p_user_id 
-	 AND inventory_id = p_inventory_id;
+	 AND inventory_id = p_inventory_id
+	 AND return_time IS NULL;
 END$$
 
 

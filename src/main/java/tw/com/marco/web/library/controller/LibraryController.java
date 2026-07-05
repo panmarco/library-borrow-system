@@ -19,8 +19,8 @@ public class LibraryController {
 	private LibraryService service;
 
 	@GetMapping("manage")
-	public AllData manage() {
-		return service.getAllData();
+	public AllData manage(@SessionAttribute(required = false) User user) {
+		return service.getAllData(user.getUserId());
 	}
 
 	@PostMapping("/rent/{inventoryId}")

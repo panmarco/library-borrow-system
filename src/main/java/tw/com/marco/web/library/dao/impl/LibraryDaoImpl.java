@@ -62,12 +62,42 @@ public class LibraryDaoImpl implements LibraryDao {
 		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_all_inventory", Inventory.class);
 		return query.getResultList();
 	}
+	
+	// 查詢單一書籍狀態
+	@Override
+	public String selectInventoryStatus(Integer inventoryId) {
+		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_inventory_status");
+
+		query.registerStoredProcedureParameter("p_inventory_id", Integer.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("p_status", String.class, ParameterMode.OUT);
+		query.setParameter("p_inventory_id", inventoryId);
+		
+		query.execute();
+
+		return (String) query.getOutputParameterValue("p_status");
+	}
 
 	// 查詢所有借閱紀錄
 	@Override
-	public List<BorrowingRecord> selectAllBorrowingRecords() {
-		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_all_borrowing_record",
+	public List<BorrowingRecord> selectBorrowingRecordsByUserId(Integer userId) {
+		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_borrowing_record_user_id",
 				BorrowingRecord.class);
+		query.registerStoredProcedureParameter("p_user_id", Integer.class, ParameterMode.IN);
+		query.setParameter("p_user_id", userId);
+		
 		return query.getResultList();
+	}
+
+	@Override
+	public Integer selectBorrowingRecordUserIdByInventoryId(Integer inventoryId) {
+		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_borrowing_record_user_id_by_inventory_id");
+
+		query.registerStoredProcedureParameter("p_inventory_id", Integer.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("p_user_id", Integer.class, ParameterMode.OUT);
+		query.setParameter("p_inventory_id", inventoryId);
+		
+		query.execute();
+
+		return (Integer) query.getOutputParameterValue("p_user_id");
 	}
 }
