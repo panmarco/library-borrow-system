@@ -10,10 +10,8 @@ Vue.createApp({
         const handleLogin = async () => {
             try {
                 const response = await axios.post(
-                    'http://localhost:8080/library-borrow-system/user/login',
-                    loginForm.value, {
-                    withCredentials: true
-                }
+                    '/user/login',
+                    loginForm.value
                 );
 
                 if (response.data.successful) {

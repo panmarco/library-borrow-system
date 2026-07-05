@@ -1,11 +1,7 @@
 const { ref, onMounted } = Vue;
 
-// 強制跨域攜帶 Cookie 與 Session 連結
-axios.defaults.withCredentials = true;
-
 Vue.createApp({
     setup() {
-        const API_BASE = 'http://localhost:8080/library-borrow-system';
 
         // 使用者資訊
         const currentUser = ref(null);
@@ -19,9 +15,7 @@ Vue.createApp({
         // 獲取登入者資訊
         const loadUserInfo = async () => {
             try {
-                const res = await axios.get(`${API_BASE}/user/getUserInfo`, {
-                    withCredentials: true
-                });
+                const res = await axios.get(`/user/getUserInfo`);
                 currentUser.value = res.data;
             } catch (error) {
                 alert('資料載入失敗，請聯絡後台');
@@ -32,9 +26,7 @@ Vue.createApp({
         // 初始化：獲取所有資料
         const loadAllData = async () => {
             try {
-                const res = await axios.get(`${API_BASE}/library/manage`, {
-                    withCredentials: true
-                });
+                const res = await axios.get(`/library/manage`);
 
                 inventoryList.value = res.data.inventories;
                 borrowingRecords.value = res.data.records;
@@ -46,9 +38,7 @@ Vue.createApp({
         // 點擊「確認借閱」
         const borrowBook = async (book) => {
             try {
-                const res = await axios.post(`${API_BASE}/library/rent/${book.inventoryId}`, null, {
-                    withCredentials: true
-                });
+                const res = await axios.post(`/library/rent/${book.inventoryId}`);
                 const result = res.data;
 
                 if (result.successful) {
@@ -66,9 +56,7 @@ Vue.createApp({
         // 點擊「確認歸還」
         const returnBook = async (book) => {
             try {
-                const res = await axios.post(`${API_BASE}/library/return/${book.inventoryId}`, null, {
-                    withCredentials: true
-                });
+                const res = await axios.post(`/library/return/${book.inventoryId}`);
                 const result = res.data;
 
                 if (result.successful) {
@@ -87,9 +75,7 @@ Vue.createApp({
         const logout = async () => {
             const result = confirm('確定登出');
             if (result) {
-                await axios.delete(`${API_BASE}/user/logout`, {
-                    withCredentials: true
-                });
+                await axios.delete(`/user/logout`);
                 location.href = './login.html';
             }
         };

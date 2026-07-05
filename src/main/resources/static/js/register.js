@@ -10,7 +10,7 @@ Vue.createApp({
 
         const handleRegister = async () => {
             try {
-                const response = await axios.post('http://localhost:8080/library-borrow-system/user/register', registerForm.value);
+                const response = await axios.post('/user/register', registerForm.value);
 
                 if (response.data.successful) {
                     alert(response.data.message);
