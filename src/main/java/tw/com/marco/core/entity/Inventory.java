@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,4 +35,13 @@ public class Inventory extends Core{
     private Timestamp storeTime;
 
     private String status;
+    
+    @Transient
+    private String bookName;
+    
+    @Transient
+    private String author;
+    
+    @Transient
+    private String introduction;
 }

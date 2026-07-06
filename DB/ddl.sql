@@ -85,7 +85,16 @@ END$$
 -- 查詢所有庫存
 CREATE PROCEDURE sp_select_all_inventory()
 BEGIN
-    SELECT * FROM inventory;
+    SELECT 
+        i.inventory_id, 
+        i.isbn, 
+        i.store_time, 
+        i.status,
+        b.name AS bookName,
+        b.author AS author,
+        b.introduction AS introduction
+    FROM inventory i
+    INNER JOIN books b ON i.isbn = b.isbn;
 END$$
 
 -- 查詢單一書籍狀態

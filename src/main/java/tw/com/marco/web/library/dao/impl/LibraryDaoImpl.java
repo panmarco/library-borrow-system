@@ -59,8 +59,25 @@ public class LibraryDaoImpl implements LibraryDao {
 	// 查詢所有庫存
 	@Override
 	public List<Inventory> selectAllInventory() {
-		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_all_inventory", Inventory.class);
-		return query.getResultList();
+		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_all_inventory");
+		
+		List<Object[]> rows = query.getResultList();
+	    List<Inventory> resultList = new java.util.ArrayList<>();
+		for (Object[] row : rows) {
+	        Inventory inv = new Inventory();
+	        inv.setInventoryId((Integer) row[0]);
+	        inv.setIsbn((String) row[1]);
+	        // java.time.LocalDateTime 接收，再轉成 java.sql.Timestamp
+	        inv.setStoreTime(java.sql.Timestamp.valueOf((java.time.LocalDateTime) row[2]));
+	        inv.setStatus((String) row[3]);
+	        // 手動塞值進@Transient中
+	        inv.setBookName((String) row[4]);
+	        inv.setAuthor((String) row[5]);
+	        inv.setIntroduction((String) row[6]);
+	        
+	        resultList.add(inv);
+	    }
+	    return resultList;
 	}
 	
 	// 查詢單一書籍狀態

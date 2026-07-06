@@ -32,8 +32,8 @@
                             <table class="table table-hover align-middle">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>庫存編號</th>
-                                        <th>國際標準書號 (ISBN)</th>
+                                        <th>書籍資訊</th>
+                                        <th>國際標準書號</th>
                                         <th class="text-center">狀態</th>
                                         <th class="text-center">功能操作</th>
                                     </tr>
@@ -41,7 +41,20 @@
                                 <tbody>
                                     <tr v-for="book in inventoryList" :key="book.inventoryId">
                                         <td>
-                                            <div class="fw-bold text-dark fs-6">書籍 ID: #{{ book.inventoryId }}</div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="fw-bold text-dark fs-6">{{ book.bookName }}</span>
+                                            </div>
+
+                                            <small class="text-muted d-block mb-1">作者: {{ book.author || '未知' }}</small>
+
+                                            <div v-if="book.introduction" class="text-secondary mt-1 border-top pt-1"
+                                                style="font-size: 0.8rem; max-width: 300px;">
+                                                📝 簡介：{{ book.introduction }}
+                                            </div>
+                                            <div v-else class="text-muted mt-1 border-top pt-1"
+                                                style="font-size: 0.8rem; font-style: italic;">
+                                                📝 暫無書籍簡介
+                                            </div>
                                         </td>
                                         <td>
                                             <span class="badge bg-light text-secondary fs-6">{{ book.isbn }}</span>
@@ -92,10 +105,9 @@
                             <li v-for="record in borrowingRecords" :key="record.recordId"
                                 class="list-group-item d-flex justify-content-between align-items-center p-3 animate-item">
                                 <div class="w-70">
-                                    <small class="text-dark d-block mt-1">
-                                        📖 庫存編號: #{{ record.inventoryId?.inventoryId || record.inventoryId }}
+                                    <small class="text-dark d-block mt-1 fw-bold">
+                                        📖 書名: {{ inventoryList.find(b => b.inventoryId === (record.inventoryId?.inventoryId || record.inventoryId))?.bookName || '讀取中... (ID: #' + (record.inventoryId?.inventoryId || record.inventoryId) + ')' }}
                                     </small>
-
                                     <div class="mt-2 text-muted" style="font-size: 0.85rem;">
                                         <div>📅 借閱時間: <span class="text-secondary">{{ formatTime(record.borrowingTime)
                                                 }}</span></div>
