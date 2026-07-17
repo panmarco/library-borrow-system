@@ -1,5 +1,8 @@
 package tw.com.marco.web.library.dao.impl;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -62,13 +65,13 @@ public class LibraryDaoImpl implements LibraryDao {
 		StoredProcedureQuery query = session.createStoredProcedureQuery("sp_select_all_inventory");
 		
 		List<Object[]> rows = query.getResultList();
-	    List<Inventory> resultList = new java.util.ArrayList<>();
+	    List<Inventory> resultList = new ArrayList<>();
 		for (Object[] row : rows) {
 	        Inventory inv = new Inventory();
 	        inv.setInventoryId((Integer) row[0]);
 	        inv.setIsbn((String) row[1]);
-	        // java.time.LocalDateTime 接收，再轉成 java.sql.Timestamp
-	        inv.setStoreTime(java.sql.Timestamp.valueOf((java.time.LocalDateTime) row[2]));
+	        // LocalDateTime接收，再轉成Timestamp
+	        inv.setStoreTime(Timestamp.valueOf((LocalDateTime) row[2]));
 	        inv.setStatus((String) row[3]);
 	        // 手動塞值進@Transient中
 	        inv.setBookName((String) row[4]);
